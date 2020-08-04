@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.modules.system.dao.SysRoleMenuDao">
+    <resultMap id="BaseResultMap" type="com.modules.system.entity.SysRoleMenu" >
+                <result column="id" property="id" jdbcType="BIGINT" />
+                <result column="role_id" property="roleId" jdbcType="BIGINT" />
+                <result column="menu_id" property="menuId" jdbcType="BIGINT" />
+                <result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+                <result column="update_user_id" property="updateUserId" jdbcType="BIGINT" />
+                <result column="create_time" property="createTime" jdbcType="DATE" />
+                <result column="update_time" property="updateTime" jdbcType="DATE" />
+                <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+                id,
+                role_id,
+                menu_id,
+                create_user_id,
+                update_user_id,
+                create_time,
+                update_time,
+                is_deleted
+    </sql>
+
+
+    <select id="next" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_role_menu
+        WHERE is_deleted=0 and id &lt; #{id,jdbcType=BIGINT}
+        ORDER BY ID DESC
+        limit 1
+    </select>
+
+    <select id="prev" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_role_menu
+        WHERE is_deleted=0 and id &gt; #{id,jdbcType=BIGINT}
+        ORDER BY ID ASC
+        limit 1
+    </select>
+</mapper>
