@@ -1,10 +1,13 @@
 package com.modules.system.dao;
 
 import com.modules.common.generator.utils.MyMapper;
+import com.modules.system.entity.SysRole;
 import com.modules.system.entity.SysUserRole;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author chen
@@ -47,5 +50,9 @@ public interface SysUserRoleDao extends MyMapper<SysUserRole> {
     @Select("SELECT (number+0) numberStr FROM sys_user_role WHERE is_deleted=0 ORDER BY numberStr DESC LIMIT 1")
     @ResultType(Integer.class)
     Integer getLastNumber();
+
+    @Select("select b.* from sys_user_role a left join sys_role b on b.id = a.role_id where a.user_id = #{userId}")
+    @ResultType(SysRole.class)
+    List<SysRole> selectRoleByUserId(Long userId);
 
 }

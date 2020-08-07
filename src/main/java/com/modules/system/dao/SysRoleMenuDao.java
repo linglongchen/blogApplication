@@ -1,10 +1,13 @@
 package com.modules.system.dao;
 
 import com.modules.common.generator.utils.MyMapper;
+import com.modules.system.entity.SysMenu;
 import com.modules.system.entity.SysRoleMenu;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author chen
@@ -47,5 +50,12 @@ public interface SysRoleMenuDao extends MyMapper<SysRoleMenu> {
     @Select("SELECT (number+0) numberStr FROM sys_role_menu WHERE is_deleted=0 ORDER BY numberStr DESC LIMIT 1")
     @ResultType(Integer.class)
     Integer getLastNumber();
+
+
+
+
+    @Select("select b.* from sys_role_menu a left join sys_menu b on b.id = a.menu_id where a.role_id = #{roleId}")
+    @ResultType(SysMenu.class)
+    List<SysMenu>  selectMenusByRoleId(Long roleId);
 
 }

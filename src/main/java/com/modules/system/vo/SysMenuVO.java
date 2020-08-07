@@ -1,9 +1,12 @@
 package com.modules.system.vo;
 
+import com.google.common.collect.Lists;
 import com.modules.common.base.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
 * @author chen
@@ -54,4 +57,6 @@ public class SysMenuVO extends BaseVO {
     */
     @ApiModelProperty("排序")
 	private Integer nums;
+
+    List<SysMenuVO> children = Lists.newArrayList();
 }

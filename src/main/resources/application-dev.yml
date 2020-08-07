@@ -1,5 +1,5 @@
 server:
-  port: 8002
+  port: 8000
   servlet:
     context-path: /api/
 spring:
@@ -23,12 +23,6 @@ spring:
         max-idle: 8
         min-idle: 0
         max-wait: -1ms
-  security:
-    user:
-      name: admin
-      password: 123456
-      roles: USER
-
   # kafka
   kafka:
     bootstrap-servers: localhost:9092

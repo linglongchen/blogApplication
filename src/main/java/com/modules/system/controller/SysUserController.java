@@ -51,12 +51,7 @@ public class SysUserController {
 	})
 	public Result info(HttpServletRequest request) {
 		String token = request.getHeader("X-Token");
-		SysUserDB sysUserDB = new SysUserDB();
-		SysUser sysUser = sysUserService.getSysUserByToken(token);
-		BeanUtils.copyProperties(sysUser,sysUserDB);
-		List<SysUserRole> sysUserRoles = sysUserRoleService.listByUserId(sysUser.getId());
-		SysRole sysRole = sysRoleService.get(sysUserRoles.get(0).getRoleId());
-		sysUserDB.setRoles(sysRole);
+		SysUserVO sysUserDB = sysUserService.getCurrentUserInfo(token);
 		return Result.ok().data(sysUserDB);
 
 	}

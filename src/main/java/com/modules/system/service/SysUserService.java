@@ -5,6 +5,7 @@ import com.modules.common.utils.PageInfo;
 import com.modules.system.dbEntity.SysUserDB;
 import com.modules.system.entity.SysUser;
 import com.modules.system.query.SysUserQuery;
+import com.modules.system.vo.SysUserVO;
 
 import java.util.List;
 
@@ -106,4 +107,6 @@ public interface SysUserService {
      * @return
      */
     SysUser getSysUserByToken(String token);
+
+    SysUserVO getCurrentUserInfo(String token);
 }

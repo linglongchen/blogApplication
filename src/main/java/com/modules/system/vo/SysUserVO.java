@@ -1,9 +1,12 @@
 package com.modules.system.vo;
 
+import com.google.common.collect.Sets;
 import com.modules.common.base.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Set;
 
 /**
 * @author chen
@@ -49,9 +52,6 @@ public class SysUserVO extends BaseVO {
     */
     @ApiModelProperty("状态  0：禁用   1：正常")
 	private boolean status;
-    /**
-    * 机构ID
-    */
-    @ApiModelProperty("机构ID")
-	private Long deptId;
+    private Set<String> roles = Sets.newHashSet();
+    private Set<SysMenuVO> menus = Sets.newHashSet();
 }
