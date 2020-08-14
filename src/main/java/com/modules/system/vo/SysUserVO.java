@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,7 +52,11 @@ public class SysUserVO extends BaseVO {
     * 状态  0：禁用   1：正常
     */
     @ApiModelProperty("状态  0：禁用   1：正常")
-	private boolean status;
-    private Set<String> roles = Sets.newHashSet();
-    private Set<SysMenuVO> menus = Sets.newHashSet();
+	private int status;
+
+    @ApiModelProperty("角色")
+    private List<String> roles;
+
+    @ApiModelProperty("菜单")
+    private List<SysMenuVO> menus;
 }

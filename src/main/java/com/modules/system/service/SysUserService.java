@@ -108,5 +108,10 @@ public interface SysUserService {
      */
     SysUser getSysUserByToken(String token);
 
+    /**
+     * 获取用户信息(角色以及菜单)
+     * @param token
+     * @return
+     */
     SysUserVO getCurrentUserInfo(String token);
 }

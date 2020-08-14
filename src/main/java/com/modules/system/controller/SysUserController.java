@@ -44,6 +44,16 @@ public class SysUserController {
 	private SysRoleService sysRoleService;
 
 
+	@PostMapping("/register")
+	public Result registerUser(String name,String password){
+		SysUser user = new SysUser();
+		user.setUsername(name);
+		user.setPassword(bCryptPasswordEncoder.encode(password));
+		sysUserService.insert(user);
+		return Result.ok();
+	}
+
+
 	@GetMapping("/info")
 	@ApiOperation(value = "根据token获取数据")
 	@ApiResponses({

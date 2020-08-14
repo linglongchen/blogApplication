@@ -37,7 +37,7 @@ public class KafkaAspect {
         return obj;
     }
 
-    @Around("execution(public * com.modules.system.controller.KafkaController.*(..))")
+    @Around("execution(public * com.modules.system.controller..*(..))")
     public Object doAroundController(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         KafkaLogModel kafkaLogModel = new KafkaLogModel();
         kafkaLogModel.setLogType("controller");

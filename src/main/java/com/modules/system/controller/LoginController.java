@@ -3,14 +3,20 @@ package com.modules.system.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.modules.common.annotation.IgnoreSecurity;
 import com.modules.common.generator.utils.Result;
+import com.modules.common.generator.utils.ResultCode;
+import com.modules.common.jwt.JwtProperties;
+import com.modules.common.jwt.JwtUtils;
 import com.modules.common.utils.RedisUtils;
 import com.modules.common.utils.StringUtils;
 import com.modules.common.base.BaseController;
 import com.modules.system.entity.SysUser;
+import com.modules.system.entity.User;
 import com.modules.system.service.SysUserService;
 import com.modules.system.service.UserService;
 import com.modules.system.weixin.common.OpenApi;
+import com.modules.system.weixin.entity.WeChatVO;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.SignatureException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.weixin4j.WeixinException;
+
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -45,30 +52,21 @@ public class LoginController extends BaseController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-
-
-
-    @PostMapping("/register")
-    public String registerUser(String name,String password){
-        SysUser user = new SysUser();
-        user.setUsername(name);
-        user.setPassword(bCryptPasswordEncoder.encode(password));
-        sysUserService.insert(user);
-        return "success";
-    }
-//    @Resource
-//    private UserService userInfoService;
-//    @Resource
-//    private Audience audience;
-//    @Resource
-//    private RedisUtils redisUtils;
+    @Resource
+    private UserService userInfoService;
+    @Resource
+    private JwtUtils jwtUtils;
+    @Resource
+    private JwtProperties jwtProperties;
+    @Resource
+    private RedisUtils redisUtils;
 //
 //
 //    @PostMapping(value = "/login")
 //    @ApiOperation("登陆/注册")
 //    @IgnoreSecurity
-//    public Result login(@RequestBody Account account) {
-//        String data = OpenApi.getWeixinData(account.getJsCode());
+//    public Result login(@RequestBody WeChatVO weChatVO) {
+//        String data = OpenApi.getWeixinData(weChatVO.getJsCode());
 //        JSONObject jsonObj = JSONObject.parseObject(data);
 //        User user = new User();
 //        if (jsonObj.containsKey("session_key")) {
@@ -77,48 +75,23 @@ public class LoginController extends BaseController {
 //            User userInfo = userInfoService.getCountByOpenId(openId);
 //            if (userInfo == null) {
 //                user.setWechatId(openId);
-//                user.setHeadImg(account.getAvatarUrl());
-//                user.setNickName(account.getNickName());
+//                user.setHeadImg(weChatVO.getHeardImg());
+//                user.setNickName(weChatVO.getNickName());
 //                userInfoService.insert(user);
 //            }
 //        } else {
-//            return new Result(ResultStatusCode.SYSTEM_ERR);
+//            return Result.ok();
 //        }
 //        //一个用户同时只能有一台设备登录（用户端）
 //        String redisToken = redisUtils.getToken(user.getId());
 //        if (StringUtils.isNotEmpty(redisToken)) {
-//            String HeadStr = redisToken.substring(0, 6).toLowerCase();
-//            if (HeadStr.equals("bearer")) {
-//                redisToken = redisToken.substring(6);
-//                Claims claims = JwtHelper.parseJWT(redisToken, audience.getBase64Secret());
-//                //判断密钥是否相等，如果不等则认为时无效的token
-//                if (claims != null) {
-//                    return new Result(ResultStatusCode.LOGINED_IN.getCode(), ResultStatusCode.LOGINED_IN.getMsg(), null);
-//                }
+//            Claims claims = jwtUtils.getTokenClaim(redisToken);
+//            //判断密钥是否相等，如果不等则认为时无效的token
+//            if (claims == null || jwtUtils.isTokenExpired(claims.getExpiration())) {
+//                throw new SignatureException(jwtProperties.header + "失效，请重新登录。");
 //            }
 //        }
-//        return new Result(ResultStatusCode.OK, redisLoginInfo(user));
-//    }
-//
-//    public Map<String, Object> redisLoginInfo(User user) {
-//        //设置单次的token的过期时间为凌晨3点-4点，用于避免token在即将失效时继续使用旧的token访问
-//        Calendar cal = Calendar.getInstance();
-//        cal.add(Calendar.DAY_OF_MONTH, +1);
-//        cal.set(Calendar.HOUR_OF_DAY, 3);
-//        //拼装accessToken
-//        String accessToken = JwtHelper.createJWT(user.getPhone(), user.getId(),
-//                audience.getClientId(), audience.getName(),
-//                cal.getTimeInMillis() - System.currentTimeMillis(), audience.getBase64Secret());
-//        //将该用户的access_token储存到redis服务器，保证一段时间内只能有一个有效的access_token
-//        redisUtils.setToken(user.getId(), accessToken, cal.getTimeInMillis() - System.currentTimeMillis());
-//        //获取refresh_token，有效期为7天，每次通过refresh_token获取access_token时，会刷新refresh_token的时间
-//        String refreshToken = JwtHelper.createRefreshToken(user.getPhone(), user.getId(), audience.getClientId(), audience.getName(), audience.getBase64Secret());
-//        redisUtils.setRefreshToken(user.getId(), refreshToken);
-//        Map<String, Object> result = new HashMap<String, Object>();
-//        result.put("access_token", "bearer" + accessToken);
-//        result.put("refresh_token", "bearer" + refreshToken);
-//        result.put("user", user);
-//        return result;
+//        return Result.ok().data(redisToken);
 //    }
 //
 //
@@ -127,7 +100,7 @@ public class LoginController extends BaseController {
 //    public Result logout(HttpServletRequest request) {
 //        redisUtils.delete(RedisUtils.ACCESS_TOKEN + getUserId(request));
 //        redisUtils.delete(RedisUtils.REFRESH_TOKEN + getUserId(request));
-//        return new Result(ResultStatusCode.OK.getCode(), ResultStatusCode.OK.getMsg(), null);
+//        return Result.ok();
 //    }
 //
 //
@@ -159,7 +132,7 @@ public class LoginController extends BaseController {
 //                        System.out.println(redisUtils.getRefreshToken(userId));
 //                        if (claims.getAudience().equals(audience.getClientId()) && refreshToken.equals(redisUtils.getRefreshToken(userId))) {
 //                            User user = userInfoService.get(userId);
-//                            Map<String,String> tokenVO = new HashMap<>();
+//                            Map<String, String> tokenVO = new HashMap<>();
 //                            Map<String, Object> resultToken = redisLoginInfo(user);
 //                            tokenVO.put("access_token", "bearer" + resultToken.get("access_token"));
 //                            tokenVO.put("refresh_token", "bearer" + resultToken.get("refresh_token"));

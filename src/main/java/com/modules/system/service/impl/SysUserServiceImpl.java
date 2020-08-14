@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.modules.common.jwt.JwtUtils;
 import com.modules.common.utils.PageInfo;
+import com.modules.common.utils.StringUtils;
 import com.modules.common.utils.TreeBuilder;
 import com.modules.system.dao.SysRoleMenuDao;
 import com.modules.system.dao.SysUserDao;
@@ -133,33 +134,35 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserVO getCurrentUserInfo(String token) {
-        SysUser user = getSysUserByToken(token);
         SysUserVO userInfoVO = new SysUserVO();
-        BeanUtils.copyProperties(user, userInfoVO);
-        Set<String> roles = new HashSet();
-        Set<SysMenuVO> menuVOS = new HashSet();
-        //查询某个用户的角色
-        List<SysRole> roleList = sysUserRoleDao.selectRoleByUserId(user.getId());
-        if (roleList != null && !roleList.isEmpty()) {
-            roles.add(roleList.get(0).getName() + "");
-            //查询某个角色的菜单
-            List<SysMenu> menuList = sysRoleMenuDao.selectMenusByRoleId(roleList.get(0).getId());
-            if (menuList != null && !menuList.isEmpty()) {
-                for (SysMenu menu : menuList) {
-                    if (menu!=null){
-                        //如果权限是菜单，就添加到菜单里面
-                        SysMenuVO menuVO = new SysMenuVO();
-                        BeanUtils.copyProperties(menu, menuVO);
-                        menuVOS.add(menuVO);
+        if (StringUtils.isNotBlank(token)){
+            SysUser user = getSysUserByToken(token);
+            BeanUtils.copyProperties(user, userInfoVO);
+            Set<String> roles = new HashSet();
+            Set<SysMenuVO> menuVOS = new HashSet();
+            //查询某个用户的角色
+            List<SysRole> roleList = sysUserRoleDao.selectRoleByUserId(user.getId());
+            if (roleList != null && !roleList.isEmpty()) {
+                roles.add(roleList.get(0).getName() + "");
+                //查询某个角色的菜单
+                List<SysMenu> menuList = sysRoleMenuDao.selectMenusByRoleId(roleList.get(0).getId());
+                if (menuList != null && !menuList.isEmpty()) {
+                    for (SysMenu menu : menuList) {
+                        if (menu!=null){
+                            //如果权限是菜单，就添加到菜单里面
+                            SysMenuVO menuVO = new SysMenuVO();
+                            BeanUtils.copyProperties(menu, menuVO);
+                            menuVOS.add(menuVO);
+                        }
                     }
-                }
 //				menuList.stream().forEach(menu -> {
 //
 //				});
+                }
             }
+            userInfoVO.getRoles().addAll(roles);
+            userInfoVO.getMenus().addAll(TreeBuilder.buildTree(menuVOS));
         }
-        userInfoVO.getRoles().addAll(roles);
-        userInfoVO.getMenus().addAll(TreeBuilder.buildTree(menuVOS));
         return userInfoVO;
     }
 

@@ -31,9 +31,8 @@ public class KafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = KafkaProducer.TOPIC_LOG, groupId = "log")
+    @KafkaListener(topics = KafkaProducer.TOPIC_LOG, groupId = KafkaProducer.TOPIC_GROUP2)
     public void topic_test1(ConsumerRecord<?, ?> record, Acknowledgment ack, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-
         Optional message = Optional.ofNullable(record.value());
         if (message.isPresent()) {
             Object msg = message.get();
