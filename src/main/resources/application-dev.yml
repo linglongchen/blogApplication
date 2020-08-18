@@ -60,6 +60,15 @@ spring:
       #listner负责ack，每调用一次，就立即commit
       ack-mode: manual_immediate
       missing-topics-fatal: false
+
+
+#elasticsearch
+  elasticsearch:
+    rest:
+      uris: localhost:9200
+      username: my-application
+
+
 #mybatis
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml

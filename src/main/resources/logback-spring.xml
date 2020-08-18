@@ -156,6 +156,32 @@
             <pattern>${log.pattern}</pattern>
         </encoder>
     </appender>
+    <!-- kafka的appender配置 -->
+<!--    <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">-->
+<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--        <topic>log</topic>-->
+<!--        &lt;!&ndash; we don't care how the log messages will be partitioned  &ndash;&gt;-->
+<!--        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy" />-->
+
+<!--        &lt;!&ndash; use async delivery. the application threads are not blocked by logging &ndash;&gt;-->
+<!--        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />-->
+
+<!--        &lt;!&ndash; each <producerConfig> translates to regular kafka-client config (format: key=value) &ndash;&gt;-->
+<!--        &lt;!&ndash; producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs &ndash;&gt;-->
+<!--        &lt;!&ndash; bootstrap.servers is the only mandatory producerConfig &ndash;&gt;-->
+<!--        <producerConfig>bootstrap.servers=localhost:9092</producerConfig>-->
+<!--        &lt;!&ndash; don't wait for a broker to ack the reception of a batch.  &ndash;&gt;-->
+<!--        <producerConfig>acks=0</producerConfig>-->
+<!--        &lt;!&ndash; wait up to 1000ms and collect log messages before sending them as a batch &ndash;&gt;-->
+<!--        <producerConfig>linger.ms=1000</producerConfig>-->
+<!--        &lt;!&ndash; even if the producer buffer runs full, do not block the application but start to drop messages &ndash;&gt;-->
+<!--        <producerConfig>max.block.ms=0</producerConfig>-->
+<!--        &lt;!&ndash; define a client-id that you use to identify yourself against the kafka broker &ndash;&gt;-->
+<!--        <producerConfig>client.id=${HOSTNAME}-${CONTEXT_NAME}-logback-relaxed</producerConfig>-->
+
+<!--    </appender>-->
 
     <!--指定最基础的日志输出级别-->
     <!-- 生产环境下，将此级别配置为适合的级别，以免日志文件太多或影响程序性能 -->
@@ -166,6 +192,7 @@
         <appender-ref ref="DEBUG" />
         <!-- 生产环境将请sout去掉 -->
         <appender-ref ref="SOUT" />
+<!--        <appender-ref ref="kafkaAppender" />-->
     </root>
 
     <!-- FrameworkServlet日志-->

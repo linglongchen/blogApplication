@@ -47,6 +47,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addInterceptor(interceptorJWT)
                 .excludePathPatterns("/api/**")
                 .excludePathPatterns("/login/**")
+                .excludePathPatterns("/elastic/**")
                 .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");;
     }
 
